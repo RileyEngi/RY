@@ -1,0 +1,34 @@
+from bs4 import BeautifulSoup
+import requests
+
+url = requests.get('https://realpython.com/atom.xml')
+print(url.status_code)
+
+soup = BeautifulSoup(url.content , 'xml') 
+entries = soup.find_all('entry')
+
+for entry in entries:
+  title = entry.title.text
+  summary = entry.summary.text  
+  link = entry.link['href'] if entry.link and 'href' in entry.link.attrs else 'No link available'
+  print(f"Title: {title}\n\nSummary: {summary}\n\nLink: {link}\n\n----------------------------------------------------\n\n") 
+# Ensure you have the required libraries installed
+# pip install beautifulsoup4 requests
+
+try:
+    # Check if the response is successful
+    if url.status_code == 200:
+        print("Successfully fetched the RSS feed.")
+    else:
+        print(f"Failed to fetch the RSS feed. Status code: {url.status_code}")
+except requests.exceptions.RequestException as e:
+    print(f"An error occurred: {e}")
+
+    # Ensure the content type is XML
+    if 'xml' not in url.headers.get('Content-Type', ''):
+        print("The content fetched is not XML. Please check the URL or the response headers.")
+    else:
+        print("The content is confirmed to be XML.")
+
+
+
